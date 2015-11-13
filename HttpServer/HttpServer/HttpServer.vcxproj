@@ -142,6 +142,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Blocksock.cpp" />
+    <ClCompile Include="HttpDataAnalyse.cpp" />
+    <ClCompile Include="HttpHead.cpp" />
     <ClCompile Include="HttpServer.cpp" />
     <ClCompile Include="HttpServerDlg.cpp" />
     <ClCompile Include="Serverthread.cpp" />
@@ -157,6 +159,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Blocksock.h" />
+    <ClInclude Include="HttpDataAnalyse.h" />
+    <ClInclude Include="HttpHead.h" />
     <ClInclude Include="HttpServer.h" />
     <ClInclude Include="HttpServerDlg.h" />
     <ClInclude Include="Resource.h" />
@@ -175,4 +179,9 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="HttpServer.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>

@@ -7,9 +7,9 @@
 
 volatile int g_nConnection=0;//连接的个数
 volatile BOOL g_bListening=FALSE;//侦听套接字状态
-volatile UINT g_nPortServer=8089;//服务端口
+volatile UINT g_nPortServer=23;//服务端口
 CString g_strDirect="c:\\WebSite\\";//服务路径
-CString g_strIPServer = "127.0.0.1";//服务器地址
+CString g_strIPServer = "192.168.1.177";//服务器地址
 CString g_strDefault="Default.htm";//缺省网页的名字
 CMyBlockSocket g_sListen;//侦听套接字
 
@@ -102,7 +102,7 @@ void LogBlockingSocketException(LPVOID pParam, char* pch, CMyBlockSocketExceptio
 	strList.Format("     时间：%s",strGmt);
 	pList->AddString(strList);
 }
-
+#include "HttpDataAnalyse.h"
 UINT ServerThreadProc(LPVOID pParam)
 {
 	CSocketAddress saClient;
@@ -149,6 +149,8 @@ UINT ServerThreadProc(LPVOID pParam)
 	char* pToken1;
 	char* pToken2;
     char* pData = NULL;
+    char StringSeparates[64] = { 0 };
+    int nStringSeparates = 0;
 	try 
 	{
 		//开始侦听连接请求
@@ -223,6 +225,7 @@ UINT ServerThreadProc(LPVOID pParam)
 							nBytesSent+=sConnect.Write(buffer, uBytesToRead, 10);
 							dwBytesRead+=uBytesToRead;
 						}
+                        pFile->Close();
 					}
 					else
 					{
@@ -245,6 +248,18 @@ UINT ServerThreadProc(LPVOID pParam)
                         char *Size = p + 16;
                         nDataSize = atoi(Size);
                     }
+                    char *psp = strstr(request2, "boundary");
+                    if (NULL != psp)
+                    {
+                        psp+=9;
+                        for (int i = 0; '\r' != *psp && i < 64; ++i, ++psp)
+                        {
+                            StringSeparates[i] = *psp;
+                            nStringSeparates++;
+                        }
+
+                        
+                    }
 				}
 				while(strcmp(request2, "\r\n"));
 
@@ -259,7 +274,13 @@ UINT ServerThreadProc(LPVOID pParam)
 				//nBytesSent=sConnect.Write(hdrErr, strlen(hdrErr), 10);
                 nBytesSent = sConnect.Write(hdrFmt, strlen(hdrFmt), 10);
                 // 
+                CHttpDataAnalyse ana(pData, nDataSize);
 
+                ana.SetStringSeparates(StringSeparates, nStringSeparates);
+                if (ana.Analyse())
+                {
+                    TRACE("ok");
+                }
 			}
 			else 
 			{
